@@ -38,18 +38,24 @@ class Telega():
             res.append(array[cp*size: index*size])
         return res
 
-    @staticmethod
-    def write_json(data, filename=f'{self.path}/data.json'):
+    def write_json(self, data, filename=None):
+        filename = f'{self.path}/data.json' if filename is None else filename
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-    @staticmethod
-    def load_json(filename=f'{self.path}/data.json'):
+    def load_json(self, filename=None):
+        filename = f'{self.path}/data.json' if filename is None else filename
         with open(filename, 'r', encoding='utf-8') as f:
             return json.load(f)
         return {}
 
     # --------- The telegram functions ------ #
+
+    # Returns basic information about the bot in form of a User object.
+    def getMe(self, token_bot=None):
+        token_bot = self.token if token_bot is None else token_bot
+        r = requests.post(url=f'https://api.telegram.org/bot{token_bot}/getMe').json()
+        return r
 
     # core.telegram.org/bots/api#sendmessage
     def sendMessage(self, chat_id, text='Meow!', parse_mode='html', reply_markup={}, token_bot=None):
