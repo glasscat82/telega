@@ -1,4 +1,4 @@
-import requests, sys, json, re
+import requests, sys, json, re, math
 
 class Telega():
     """simple class for telegram, minimum set of API for sending and changing messages in telegrams"""
@@ -32,8 +32,7 @@ class Telega():
     @staticmethod
     def array_chunk(array, size):
         res = []
-        num = len(array)/size
-        count_size = int(num + (0.5 if num > 0 else -0.5))
+        count_size = math.ceil(len(array)/size)
         for index, cp in enumerate(range(count_size), 1):
             res.append(array[cp*size: index*size])
         return res
