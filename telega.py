@@ -37,6 +37,40 @@ class Telega():
             res.append(array[cp*size: index*size])
         return res
 
+    @staticmethod
+    def add_teg(text_, tegs = [], plus = ''):
+        if len(tegs) == 0:
+            return text_
+        pre_teg = ''.join(['<'+str(p)+'>' for p in tegs])
+        tegs.reverse()
+        suf_teg = ''.join(['</'+str(s)+'>' for s in tegs])
+        return pre_teg + str(text_) + suf_teg + plus
+
+    @staticmethod
+    def slice_limit(links, pager = 1, lmt = 10):
+        count_page = math.ceil(len(links)/lmt)
+        for index, cp in enumerate(range(count_page), 1):
+            if index != pager:
+                continue
+            return links[cp*lmt: index*lmt]
+        return False
+
+    # return page navigator for page
+    def get_reply_markup(self, count_page, active_button = 1, slim_limit = 3, sufix = 'region'):
+        r = [index for index, s_ in enumerate(range(count_page), 1)]
+        inline_keyboard = []
+        for url in self.array_chunk(r, slim_limit):
+            k = []
+            for u in url:
+                ut = '('+str(u)+')' if u == active_button else str(u)
+                k.append({'text':ut,'callback_data':sufix+'_'+str(u)})
+            inline_keyboard.append(k)
+        # inline_keyboard for telegram
+        reply_markup = {
+            'inline_keyboard':inline_keyboard, 
+            'resize_keyboard':True, 'one_time_keyboard':False}
+        return reply_markup
+
     def write_json(self, data, filename=None):
         filename = f'{self.path}/data.json' if filename is None else filename
         with open(filename, 'w', encoding='utf-8') as f:
