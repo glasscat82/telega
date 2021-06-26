@@ -57,17 +57,17 @@ class Telega():
 
     # return page navigator for page
     def get_reply_markup(self, count_page, active_button = 1, slim_limit = 3, sufix = 'region'):
+        inline_keyboard_ = []
         r = [index for index, s_ in enumerate(range(count_page), 1)]
-        inline_keyboard = []
         for url in self.array_chunk(r, slim_limit):
             k = []
             for u in url:
                 ut = '('+str(u)+')' if u == active_button else str(u)
                 k.append({'text':ut,'callback_data':sufix+'_'+str(u)})
-            inline_keyboard.append(k)
+            inline_keyboard_.append(k)
         # inline_keyboard for telegram
         reply_markup = {
-            'inline_keyboard':inline_keyboard, 
+            'inline_keyboard':inline_keyboard_,
             'resize_keyboard':True, 'one_time_keyboard':False}
         return reply_markup
 
@@ -114,6 +114,18 @@ class Telega():
 
         r = requests.post(
             url = f'https://api.telegram.org/bot{token_bot}/editMessageText',
+            data = data,
+            ).json()
+        return r
+
+    # core.telegram.org/bots/api#setwebhook
+    def setWebhook(self, url_bot=None, token_bot=None):
+        if url_bot is None:
+            return False        
+        data['url'] = url_bot
+        token_bot = self.token if token_bot is None else token_bot
+        r = requests.post(
+            url = f'https://api.telegram.org/bot{token_bot}/setWebhook',
             data = data,
             ).json()
         return r
